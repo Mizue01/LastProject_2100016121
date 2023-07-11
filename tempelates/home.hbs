@@ -1,19 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" type="text/css" href="css/home.css">
+  <title>Home</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to home</h1>
-        <h2>Hello, my lovely master <span class="name">{{naming}} </span>:3</h2>
-        <div class="gif-container">
-            <img src="https://media.tenor.com/-dYzuY3XsU4AAAAM/happy-anime-happy.gif" alt="Happy GIF">
-        </div>
-    </div>
+  <div class="container">
+    <h1>Welcome, {{naming}}!</h1>
+  
+    <h2>Uploaded Items:</h2>
+    {{#each data}}
+      <div>
+        <h3>{{title}}</h3>
+        <img src="{{thumbnail}}" alt="Thumbnail" width="200">
+        <p>{{description}}</p>
+        <form action="/edit/{{_id}}" method="POST">
+          <button type="submit">Edit</button>
+        </form>
+        <form action="/delete/{{_id}}" method="POST">
+          <button type="submit">Delete</button>
+        </form>
+        <hr>
+      </div>
+    {{/each}}
+  
+    <h2>Upload a New Item:</h2>
+    <form action="/upload" method="POST">
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+      </div>
+    
+      <div class="form-group">
+        <label for="thumbnail">Thumbnail (Image Link):</label>
+        <input type="text" id="thumbnail" name="thumbnail" required>
+      </div>
+    
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" required></textarea>
+      </div>
+    
+      <button type="submit">Upload</button>
+    </form>
+  </div>
 </body>
 </html>

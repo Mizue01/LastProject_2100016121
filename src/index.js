@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const app = express();
-const LogInCollection = require("./mongo");
+const { LogInCollection, ItemCollection } = require("./mongo");
 const port = process.env.PORT || 3000;
 app.use(express.json());
 
@@ -18,12 +18,18 @@ app.use(express.static(publicPath));
 app.get("/signup", (req, res) => {
   res.render("signup");
 });
+
 app.get("/", (req, res) => {
   res.render("login");
 });
 
-app.get("/home", (req, res) => {
-  res.render("home");
+app.get("/home", async (req, res) => {
+  try {
+    const allData = await ItemCollection.find();
+    res.render("home", { data: allData, naming: req.body.name });
+  } catch (error) {
+    res.send("Error: " + error.message);
+  }
 });
 
 app.post("/signup", async (req, res) => {
@@ -54,12 +60,51 @@ app.post("/login", async (req, res) => {
     const check = await LogInCollection.findOne({ name: req.body.name });
 
     if (check && check.password === req.body.password) {
-      res.status(201).render("home", { naming: `${req.body.name}` });
+      res.status(201).render("home", {
+        naming: req.body.name,
+      });
     } else {
       res.send("Incorrect password");
     }
   } catch (error) {
     res.send("Wrong details");
+  }
+});
+
+app.post("/upload", async (req, res) => {
+  const itemData = {
+    title: req.body.title,
+    thumbnail: req.body.thumbnail,
+    description: req.body.description,
+  };
+
+  try {
+    await ItemCollection.create(itemData);
+    res.redirect("/home");
+  } catch (error) {
+    res.send("Error: " + error.message);
+  }
+});
+
+app.post("/edit/:itemId", async (req, res) => {
+  const itemId = req.params.itemId;
+
+  try {
+    await ItemCollection.findByIdAndUpdate(itemId, req.body);
+    res.redirect("/home");
+  } catch (error) {
+    res.send("Error: " + error.message);
+  }
+});
+
+app.post("/delete/:itemId", async (req, res) => {
+  const itemId = req.params.itemId;
+
+  try {
+    await ItemCollection.findByIdAndRemove(itemId);
+    res.redirect("/home");
+  } catch (error) {
+    res.send("Error: " + error.message);
   }
 });
 

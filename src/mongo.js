@@ -21,6 +21,22 @@ const logInSchema = new mongoose.Schema({
   },
 });
 
-const LogInCollection = new mongoose.model("LoginData", logInSchema);
+const itemSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  thumbnail: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+});
 
-module.exports = LogInCollection;
+const LogInCollection = mongoose.model("LoginData", logInSchema);
+const ItemCollection = mongoose.model("ItemData", itemSchema);
+
+module.exports = { LogInCollection, ItemCollection };
